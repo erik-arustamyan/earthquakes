@@ -1,8 +1,11 @@
-const jsonServer = require('json-server')
-const express = require('express');
-const request = require('request');
-const cheerio = require('cheerio');
-const fs = require('fs');
+var jsonServer = require('json-server');
+var server = jsonServer.create();
+var router = jsonServer.router('db.json');
+var middlewares = jsonServer.defaults();
+var fs = require('fs');
+var port = process.env.PORT || 3000;const express = require('express');
+var request = require('request');
+var cheerio = require('cheerio');
 
 var app = express();
 var f = "db.json";
@@ -85,16 +88,11 @@ setInterval(function() {
 }, 5000);
 
 
-exports = module.exports = app;
-const server = jsonServer.create()
-const router = jsonServer.router('db.json')
-const middlewares = jsonServer.defaults()
+server.use(middlewares);
+server.use(router);
 
-server.use(middlewares)
-server.use(router)
-server.listen(3000, () => {
-  console.log('JSON Server is running')
-})
-
+server.listen(port, function () {
+  console.log('\x1b[36mjson-server is running in port'+port+'!');
+});
 
 
