@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <script src="http://www.realtimestatistics.net/rts/RTSp.js" type="text/javascript"></script>
+    <script type="text/javascript"> var rts_configuration =
+      {
+      RTS_key: 'Key-Provided-to-Licensed-Client'
+      }
+    </script>
+    <script src="http://www.webglearth.com/v2/api.js"></script>
+    <script>function initialize() {
+        var options = {
+          sky: true,
+          atmosphere: true,
+          dragging: false,
+          tilting: false,
+          zooming: false,
+          center: [40.1958864, 44.47921229999997],
+          zoom: 3
+        };
+        earth = new WE.map('earth_div', options);
+        var natural = WE.tileLayer('http://data.webglearth.com/natural-earth-color/{z}/{x}/{y}.jpg', {
+          tileSize: 256,
+          tms: true
+        });
+        natural.addTo(earth);
+
+        var toner = WE.tileLayer('http://tile.stamen.com/toner/{z}/{x}/{y}.png', {
+          attribution: '',
+          opacity: 0.6
+        });
+        toner.addTo(earth);
+      }
+       // Start a simple rotation animation
+        var before = null;
+        requestAnimationFrame(function animate(now) {
+            var c = earth.getPosition();
+            var elapsed = before? now - before: 0;
+            before = now;
+            earth.setCenter([c[0], c[1] + 0.1*(elapsed/30)]);
+            requestAnimationFrame(animate);
+        });
+          </script>
+    <style>
+    #news_div, #spacepeoples_div,#earthquakes_div,#population_div{
+    color: white;
+    opacity: 0.8;
+    background-color: black;
+    display: inline-block;
+    position: absolute;
+    float: left;
+    }
+    #news_div{
+      width: 283px;
+      height: 360px;
+      left: 10px;
+      margin-top: 10px;
+      overflow: auto;
+      overflow-x: hidden;
+    }
+    #spacepeoples_div{
+      width: 300px;
+      height: 100px;
+      right: 10px;
+      bottom: 10px;
+      font-size:25px;
+      color:white;
+      font-weight:bold;
+      text-align: center;
+      padding-top: 20px;
+    }
+
+
+    #earthquakes_div{
+      width: 300px;
+      height: 360px;
+      right: 10px;
+      top: 10px;
+      overflow: auto;
+      overflow-x: hidden;
+    }
+    #population_div{
+      width: 300px;
+      height: 200px;
+      left: 10px;
+      bottom: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+      html, body{padding: 0; margin: 0;}
+      #earth_div{top: 0; right: 0; bottom: 0; left: 0; position: absolute !important;}
+    </style>
+    <title>WebGL Earth API: Overlays</title>
+  </head>
+  <body onload="initialize()">
+
+    <div id="earth_div"></div>
+    <div id="news_div"></div>
+    <div id="spacepeoples_div"></div>
+    <div id="earthquakes_div"></div>
+    <div id="population_div"></div>
+
+   <script>
+      $(document).ready(function(){
+          setTimeout(function()
+          {
+              $.ajax({
+                  url: "/news",
+              }).done(function( data ) {
+                  $('#news_div').css({'padding-left':'10px'}).html('<hr><span id="Header"></span><hr>' + data.html);
+                  $('<hr/>').appendTo(".entry");
+                  $('#Header').text('The most important news').css({'color':'skyblue','font-size':'23px','margin-left':'5px','font-weight':'bold','margin-right':'5px','margin-top':'20px'});
+                  $('h2').css({'margin-top':'5px','margin-bottom':'10px'})
+                  $("a").attr('target','blank').css({'font-size':'20px','color':'skyblue'});
+                  $('img').css({'width':'200px','height':'150px'});
+              });
+              $.ajax({
+                  url: "/peoplesinnspace",
+              }).done(function( data ) {
+                  $('#spacepeoples_div').html("<hr><span>" + data.number + " peoples are in space now.</span><hr>");
+              });
+              $.ajax({
+                  url: "/population",
+              }).done(function( data ) {
+                  $('<table/>').attr('id','Table').css({"color":"skyblue","font-weight":"bold",'font-size':'22px'}).html("<tr><td>"+"Country"+"</td><td>"+ "Population" +"</td></tr>").appendTo("#population_div");
+                  for(var i = 0; i < data.length - 1;i++) {
+                      $('<tr/>').attr('id','Item' + i).css({'color':'white','font-size':'19px'}).html("<td>"+data[i].name+"</td><td>"+data[i].count +"</td>").appendTo("#Table");
+                  }
+              });
+              $.ajax({
+                  url: "/earthquakes",
+              }).done(function( data ) {
+                  $('<table/>').attr('id','Table').css({"color":"skyblue","font-weight":"bold",'font-size':'15px'}).html("<tr><td>"+"Region"+"</td><td>"+ "Date" +"</td><td>"+"Magnitude"+"</td></tr>").appendTo("#earthquakes_div");
+                  $('<tr/>').attr('class','Hr').html("<td><hr></td><td><hr></td><td><hr></td>").appendTo("#Table");
+                  for(var i = 0; i < data.length - 1;i++) {
+                      $('<tr/>').attr('id','Item' + i).css({"color":"white"}).html("<td>"+data[i].region+"</td><td>"+data[i].date +"</td><td>"+data[i].magnitude +"</td>").appendTo("#Table");
+                      $('<tr/>').attr('class','Hr').html("<td><hr></td><td><hr></td><td><hr></td>").appendTo("#Table");
+                  }
+              });
+          },2000);
+          $('#earth_div > div').remove();
+      });
+    </script>
+   </body>
+</html>
