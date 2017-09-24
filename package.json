@@ -1,8 +1,10 @@
+
 {
   "name": "EarthStatistics",
   "version": "1.0.0",
   "description": "Data research and visualisation project example for TUMO students",
-  "main": "index.js",
+  "main": "public/index.html",
+  "dev":"index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
