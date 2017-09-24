@@ -20,7 +20,7 @@ setInterval(function() {
             if (!error) {
                 JSON_info = '{';
                 JSON_info += '"peoplesinnspace":';
-                JSON_info += '{"number":"' + JSON.stringify(body.number) + '"},';
+                JSON_info += '{"number":"' + JSON.stringify(body.number) + '"}';
                 JSON_info += ',';
                 console.log('Received count of peoples in space.');
                 //Scrapping ImportantNews
